@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Light Speed Motor</string>
+    <string name="bluetooth_Settings">Bluetooth Settings</string>
+    <string name="bluetooth_Status">Disconnected</string>
+</resources>
