@@ -6,14 +6,12 @@ import androidx.appcompat.widget.Toolbar;
 
 import com.airbnb.lottie.LottieAnimationView;
 import com.cardiomood.android.controls.gauge.SpeedometerGauge;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
-import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -51,12 +50,17 @@ public class MainActivity extends AppCompatActivity {
     // Speedometer
     private SpeedometerGauge speedometer;
     private TextView speedTextView;
+    private TextView modeTextView;
 
     // Seekbar
     private SeekBar throttle;
 
-    // Motor Logic
+    // Shifters
+    private ImageView leftShift;
+    private ImageView rightShift;
 
+    // Motor Logic
+    private int mode = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,8 +79,12 @@ public class MainActivity extends AppCompatActivity {
                 // speedometer : visible
                 speedometer.setVisibility(View.VISIBLE);
                 speedTextView.setVisibility(View.VISIBLE);
+                modeTextView.setVisibility(View.VISIBLE);
                 // seekbar : visible
                 throttle.setVisibility(View.VISIBLE);
+                // shifters : visible
+                leftShift.setVisibility(View.VISIBLE);
+                rightShift.setVisibility(View.VISIBLE);
             }
         }, animationDelay);
 
@@ -87,13 +95,28 @@ public class MainActivity extends AppCompatActivity {
         mToolbar = findViewById(R.id.appToolbar);
         setSupportActionBar(mToolbar);
 
-        // Set up Speedometer
+        // Set up speedometer
         speedometer = findViewById(R.id.speedometer);
         speedTextView = findViewById(R.id.speedTextView);
+        modeTextView = findViewById(R.id.modeTextView);
 
         // Set up seekbar
         throttle = findViewById(R.id.throttle);
         throttle.setOnSeekBarChangeListener(seekBarChangeListener);
+
+        // Set up shifters
+        leftShift = findViewById(R.id.shiftLeftImage);
+        rightShift = findViewById(R.id.shiftRightImage);
+        leftShift.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                shiftModeLeft();
+            }
+        });
+        rightShift.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                shiftModeRight();
+            }
+        });
 
         // configure value range and ticks
         speedometer.setMaxSpeed(6000);
@@ -106,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
         speedometer.addColoredRange(0, 3000, Color.GREEN);
         speedometer.addColoredRange(3000, 5000, Color.YELLOW);
         speedometer.addColoredRange(5000, 6000, Color.RED);
-
     }
 
     // SeekBar logic
@@ -116,14 +138,14 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
             int speed = 6 * progress;
-            speedometer.setSpeed(speed);
             String txData = String.format("%04d", speed);
+            try {
+                write(txData);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            speedometer.setSpeed(speed);
             speedTextView.setText(txData);
-//            try {
-//                write(txData);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
         }
 
         @Override
@@ -136,6 +158,47 @@ public class MainActivity extends AppCompatActivity {
             // called after the user finishes moving the SeekBar
         }
     };
+
+    // Translate Mode number to String
+    public String getMode(int modeNumber){
+        switch(modeNumber) {
+            case 0: return "R";
+
+            case 2: return "L";
+
+            case 3: return "M";
+
+            case 4: return "H";
+
+            default: return "S";
+        }
+    }
+
+    public void shiftModeLeft(){
+        if(mode != 0){
+            mode -= 1;
+            modeTextView.setText(getMode(mode));
+        }
+        if(mode == 0){
+            leftShift.setColorFilter(R.color.black);
+        }
+        if(mode == 3){
+            rightShift.clearColorFilter();
+        }
+    }
+
+    public void shiftModeRight(){
+        if(mode != 4){
+            mode += 1;
+            modeTextView.setText(getMode(mode));
+        }
+        if(mode == 4){
+            rightShift.setColorFilter(R.color.black);
+        }
+        if(mode == 1){
+            leftShift.clearColorFilter();
+        }
+    }
 
     // Toolbar button setup
     @Override

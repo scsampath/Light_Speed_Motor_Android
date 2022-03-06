@@ -18,10 +18,55 @@
     <com.cardiomood.android.controls.gauge.SpeedometerGauge
         android:id="@+id/speedometer"
         android:visibility="invisible"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"/>
+
+    <ImageView
+        android:id="@+id/shiftRightImage"
+        android:visibility="invisible"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|top"
+        android:src="@drawable/arrow"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/appToolbar"
+        android:layout_margin="25dp"
+        app:tint="@color/Yellow"
+        android:clickable="true"
+        android:focusable="true"/>
+
+    <ImageView
+        android:id="@+id/shiftLeftImage"
+        android:visibility="invisible"
+        android:layout_width="250dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|top"
+        android:src="@drawable/arrow"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/appToolbar"
+        android:layout_margin="25dp"
+        android:rotation="180"
+        app:tint="@color/Yellow"
+        android:clickable="true"
+        android:focusable="true"/>
+
+    <TextView
+        android:id="@+id/modeTextView"
+        android:visibility="invisible"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/speedometer"
+        android:layout_below="@id/appToolbar"
+        android:textSize="50sp"
+        android:textColor="@color/progressColor"
+        android:text="S" />
 
     <TextView
         android:id="@+id/speedTextView"
@@ -30,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:textSize="25dp"
+        android:textSize="25sp"
         android:text="0000" />
 
     <SeekBar
