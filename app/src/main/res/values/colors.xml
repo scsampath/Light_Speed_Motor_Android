@@ -12,6 +12,7 @@
     <color name="Green">#4CAF50</color>
     <color name="Yellow">#FFEB3B</color>
     <color name="Red">#FF0000</color>
+    <color name="Orange">#FF5722</color>
     <color name="progressColor">#00DBFF</color>
 
 </resources>

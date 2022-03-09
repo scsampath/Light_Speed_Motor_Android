@@ -126,8 +126,9 @@ public class MainActivity extends AppCompatActivity {
         speedometer.setLabelTextSize(1000);
 
         // Configure value range colors
-        speedometer.addColoredRange(0, 3000, Color.GREEN);
-        speedometer.addColoredRange(3000, 5000, Color.YELLOW);
+        speedometer.addColoredRange(0, 1000, Color.GREEN);
+        speedometer.addColoredRange(1000, 3000, Color.rgb(255, 235, 59));
+        speedometer.addColoredRange(3000, 5000, Color.rgb(255, 87, 34));
         speedometer.addColoredRange(5000, 6000, Color.RED);
     }
 
@@ -137,15 +138,15 @@ public class MainActivity extends AppCompatActivity {
         @SuppressLint("DefaultLocale")
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            int speed = 6 * progress;
-            String txData = String.format("%04d", speed);
+            String txData = String.format("%04d", progress);
             try {
                 write(txData);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            int speed = progress*getMultiplier(mode);
             speedometer.setSpeed(speed);
-            speedTextView.setText(txData);
+            speedTextView.setText(String.format("%04d", speed));
         }
 
         @Override
@@ -170,29 +171,57 @@ public class MainActivity extends AppCompatActivity {
 
             case 4: return "H";
 
+            case 5: return "H+";
+
             default: return "S";
+        }
+    }
+
+    public int getMultiplier(int modeNumber){
+        switch(modeNumber) {
+            case 0 :
+            case 2 :
+                return 1;
+            case 3 :
+                return 3;
+            case 4 :
+                return 5;
+            case 5 :
+                return 6;
+            default :
+                return 0;
         }
     }
 
     public void shiftModeLeft(){
         if(mode != 0){
+            try {
+                write("8000");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             mode -= 1;
             modeTextView.setText(getMode(mode));
         }
         if(mode == 0){
             leftShift.setColorFilter(R.color.black);
         }
-        if(mode == 3){
+        if(mode == 4){
             rightShift.clearColorFilter();
         }
     }
 
     public void shiftModeRight(){
-        if(mode != 4){
+        if(mode != 5){
+            try {
+                write("9000");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             mode += 1;
             modeTextView.setText(getMode(mode));
         }
-        if(mode == 4){
+        if(mode == 5){
             rightShift.setColorFilter(R.color.black);
         }
         if(mode == 1){
